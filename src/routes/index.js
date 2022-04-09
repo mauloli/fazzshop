@@ -1,10 +1,8 @@
 const express = require("express");
 
 const Router = express.Router();
+const authRoutes = require("../modules/auth/authRoutes");
 
-Router.get("/hello", (request, responese) => {
-  responese.status(200);
-  responese.send("hello");
-});
+Router.use("/auth", authRoutes);
 
 module.exports = Router;

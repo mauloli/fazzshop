@@ -6,9 +6,10 @@ const connection = mysql.createConnection({
   password: "",
   database: "fazzshop",
 });
-
 connection.connect((error) => {
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   console.log("you are connect!");
 });
 
