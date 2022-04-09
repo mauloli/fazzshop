@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
+const jwt = require("jsonwebtoken");
 const helperWrapper = require("../../helper/wrapper");
 const authModel = require("./authModel");
 
@@ -33,6 +34,8 @@ module.exports = {
     try {
       const { email, password } = req.body;
       const checkUser = await authModel.getUserByEmail(email);
+      const payload = checkUser[0];
+
       if (checkUser.length < 1) {
         return helperWrapper.response(res, 404, "email not found", null);
       }
@@ -40,7 +43,16 @@ module.exports = {
       if (!validPass) {
         return helperWrapper.response(res, 404, "password wrong", null);
       }
-      return helperWrapper.response(res, 200, "succes login", null);
+      delete payload.password;
+      const token = jwt.sign({ ...payload }, "RAHASIA", { expiresIn: "12h" });
+      const refreshToken = jwt.sign({ ...payload }, "RAHASIABARU", {
+        expiresIn: "24h",
+      });
+      return helperWrapper.response(res, 200, "succes login", {
+        id: payload.id,
+        token,
+        refreshToken,
+      });
     } catch (error) {
       return helperWrapper.response(res, 400, "bad request", null);
     }
